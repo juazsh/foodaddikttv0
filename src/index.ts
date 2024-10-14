@@ -5,5 +5,5 @@ import app from './server'
 
 
 app.listen(config.port, () => {
-    console.log('foodaddikttv0 running on http://localhost:8989')
+    console.log(`FoodAddicts API running on http://localhost:${config.port}`)
 })
