@@ -1,13 +1,14 @@
+/**  not in use | we will get all these in a library / npm package
+import bcrypt from 'bcrypt'
+export const varifyPassword = (password, hashedPassed) => bcrypt.compare(password, hashedPassed)
+export const hashPassword = (password) => bcrypt.hash(password, 8)
+ */
 
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-
-export const varifyPassword = (password, hashedPassed) => bcrypt.compare(password, hashedPassed)
-
-export const hashPassword = (password) => bcrypt.hash(password, 8)
+import config from '../config'
 
 export const generateJWT = (usr) => {
-  const token = jwt.sign({id: usr.id, username: usr.username})
+  const token = jwt.sign( {id: usr.id, username: usr.username}, config.secrets.jwt )
   return token
 } 
 
@@ -23,7 +24,7 @@ export const guard = (req, res, next) => {
     return
   }
   try {
-    const user = jwt.verify(token, process.env.JWT_SECRET)
+    const user = jwt.verify(token, config.secrets.jwt)
     req.user = user
     next()
   }

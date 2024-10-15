@@ -25,7 +25,7 @@ model Owner {
   username  String   @unique
 }
 
-model AccessCode {
+model AccessRequest {
   id        String   @id @default(uuid()) @map("_id")
   createdAt DateTime @default(now())
   username  String   @unique

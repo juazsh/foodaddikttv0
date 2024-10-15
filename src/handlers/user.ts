@@ -1,3 +1,4 @@
+import { generateJWT } from '../modules/auth'
 import { getRandomAccessCode } from '../modules/util'
 import { sendMail } from '../services/email'
 import prisma from './../db'
@@ -12,14 +13,13 @@ export const handleUserAccessRequest = async (req, res) => {
   try {
     let user = undefined
     const { type, username} = req.body
-    if(type === USER_TYPE.USER)
-    {
+    if(type === USER_TYPE.USER) {
       user = await prisma.user.findUnique({ where: { username } })
-      if(!user)
-      {
+      if(!user) {
         user = await prisma.user.create({ data: { username } }) 
       }
-    } else {
+    } 
+    else {
       user = await prisma.owner.findUnique({ where: { username } })
       if(!user)
       {
@@ -27,12 +27,12 @@ export const handleUserAccessRequest = async (req, res) => {
       }
     }
     const code = getRandomAccessCode()
-    await prisma.accessCode.create({data: { code, username } })
+    const accessRequest = await prisma.accessRequest.create({data: { code, username } })
     await sendMail(username, 'Your Access Code', `<html><body><h4>Hi ${username}<h4>
       <p>Use the code below to access your account</p>
       <p style="font-size: 20px; color: blue">${code}</p>
       </body></html>`)
-    res.json({data: {}, message: 'Check your email for access code', success: true})  
+    res.json({data: {username, requestId : accessRequest.id }, message: 'Check your email for access code', success: true})  
   }
   catch(err) {
     res.json({data: {}, message: 'Something went wrong!', success: false})  
@@ -40,5 +40,20 @@ export const handleUserAccessRequest = async (req, res) => {
 }
 
 export const handleVerifyAccessRequest = async (req, res) => {
-  res.send(req.body)
+  try {
+    const { requestId, username, type, code } = req.body
+    const accessRequest = await prisma.accessRequest.findUnique({ where: { id: requestId, username, code }})
+    if(!accessRequest)
+    { 
+      throw new Error('Invalid Code! Please try with a different code')
+    }
+    let user = type === USER_TYPE.USER 
+      ? await prisma.user.findUnique({ where: { username } })
+      : await prisma.owner.findUnique({ where: { username } })
+    const token = generateJWT(user)
+    res.json({ data: {token}, message: 'Valid Code! Access Granted', success: true })
+  }
+  catch(err) {
+    res.json({data: {}, message: err.message, success: false})
+  }
 }
