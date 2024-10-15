@@ -7,9 +7,7 @@ export const varifyPassword = (password, hashedPassed) => bcrypt.compare(passwor
 export const hashPassword = (password) => bcrypt.hash(password, 8)
 
 export const generateJWT = (usr) => {
-  const token = jwt.sign({
-    id: usr.id, username: usr.username
-  })
+  const token = jwt.sign({id: usr.id, username: usr.username})
   return token
 } 
 
@@ -33,14 +31,5 @@ export const guard = (req, res, next) => {
     setUnAuthRespones(res)
     return
   }
-}
-
-export const getIP = (req) => {
-  let ip = req.headers['x-forwareded-for'] || req.connection.remoteAddress
-  ip = ip.replaceAll('::', '')
-  ip = ip.replaceAll(':', '')
-  ip = ip.replaceAll('ffff', '') // saw this on dev
-  const [realIP, ] = ip.split(',')
-  return realIP
 }
 const setUnAuthRespones = (res) => res.status(401).json({message : 'Not Authorized'})

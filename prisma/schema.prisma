@@ -24,3 +24,10 @@ model Owner {
   createdAt DateTime @default(now())
   username  String   @unique
 }
+
+model AccessCode {
+  id        String   @id @default(uuid()) @map("_id")
+  createdAt DateTime @default(now())
+  username  String   @unique
+  code      Int
+}

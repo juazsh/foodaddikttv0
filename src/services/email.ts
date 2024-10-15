@@ -1,12 +1,32 @@
-
 import nodemailer from 'nodemailer'
 
+import config from '../config'
+
 const transporter = nodemailer.createTransport({
-    host: 'mail.tychhexagon.com',
-    port: 465,
+    host: config.emailSettings.emailHost,
+    port: config.emailSettings.emailPort,
     secure: true,
     auth: {
-        user: '',
-        password: ''
+        user: config.emailSettings.emailAddress,
+        pass: config.emailSettings.emailPassword
     }
 })
+
+export const sendMail = async (to: string, subject: string, emailBody: string) => {
+    try{
+        console.log(config.emailSettings)
+    const mailOptions = {
+        from: config.emailSettings.emailAddress,
+        to,
+        subject,
+        html: emailBody
+    }
+        transporter.sendMail(mailOptions, (error, info) => {
+            console.log(error)
+            console.log(info)
+        })
+    }
+    catch(ex){
+        console.log(ex);
+    }
+}
