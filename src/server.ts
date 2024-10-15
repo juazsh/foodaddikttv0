@@ -2,6 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import { logIncomingRequest } from './modules/middleware'
+import { handleUserAccessRequest, handleVerifyAccessRequest } from './handlers/user'
 
 const app = express()
 
@@ -12,6 +13,9 @@ app.use(express.urlencoded({extended: true}))
 app.use(logIncomingRequest)
 
 app.get('/', (req, res) => res.json({message: 'FoodAddicts API.', version: 'v0'}))
+
+app.post('/requestaccess', handleUserAccessRequest)
+app.post('/verifyaccess', handleVerifyAccessRequest)
 
 
 export default app

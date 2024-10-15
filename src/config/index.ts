@@ -17,6 +17,12 @@ export default merge({
   stage,
   env: process.env.NODE_ENV,
   port: 8989,
+  emailSettings: {
+    emailHost: process.env.EMAIL_HOST,
+    emailPort: Number(process.env.EMAIL_PORT),
+    emailAddress: process.env.EMAIL,
+    emailPassword: process.env.EMAIL_PASSWORD
+  },
   secrets: {
     jwt: process.env.JWT_SECRET,
     dbURL: process.env.DATABASE_URL

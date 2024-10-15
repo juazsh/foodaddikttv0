@@ -1,4 +1,5 @@
-import { getIP } from "./auth"
+import { getIP } from "./util"
+
 
 export const logIncomingRequest = (req, res, next) => {
   console.log('IP:', getIP(req))
