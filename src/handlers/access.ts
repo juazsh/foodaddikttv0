@@ -1,13 +1,8 @@
+import prisma from '../db'
 import { generateJWT } from '../modules/auth'
 import { getRandomAccessCode } from '../modules/util'
 import { sendMail } from '../services/email'
-import prisma from './../db'
-
-enum USER_TYPE {
-  ADMIN,
-  OWNER,
-  USER
-}
+import { USER_TYPE } from '../modules/shared'
 
 export const handleUserAccessRequest = async (req, res) => {
   try {
@@ -50,7 +45,8 @@ export const handleVerifyAccessRequest = async (req, res) => {
     let user = type === USER_TYPE.USER 
       ? await prisma.user.findUnique({ where: { username } })
       : await prisma.owner.findUnique({ where: { username } })
-    const token = generateJWT(user)
+    const token = generateJWT(user, type)
+    await prisma.accessRequest.delete({ where: { id: requestId, username, code }})
     res.json({ data: {token}, message: 'Valid Code! Access Granted', success: true })
   }
   catch(err) {

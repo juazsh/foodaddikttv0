@@ -7,8 +7,8 @@ export const hashPassword = (password) => bcrypt.hash(password, 8)
 import jwt from 'jsonwebtoken'
 import config from '../config'
 
-export const generateJWT = (usr) => {
-  const token = jwt.sign( {id: usr.id, username: usr.username}, config.secrets.jwt )
+export const generateJWT = (usr, type) => {
+  const token = jwt.sign( {id: usr.id, username: usr.username, type}, config.secrets.jwt )
   return token
 } 
 
