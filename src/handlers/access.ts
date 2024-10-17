@@ -8,10 +8,10 @@ export const handleUserAccessRequest = async (req, res) => {
   try {
     let user = undefined
     const { type, username} = req.body
-    if(type === USER_TYPE.USER) {
-      user = await prisma.user.findUnique({ where: { username } })
+    if(type === USER_TYPE.CUSTOMER) {
+      user = await prisma.customer.findUnique({ where: { username } })
       if(!user) {
-        user = await prisma.user.create({ data: { username } }) 
+        user = await prisma.customer.create({ data: { username } }) 
       }
     } 
     else {
@@ -42,8 +42,8 @@ export const handleVerifyAccessRequest = async (req, res) => {
     { 
       throw new Error('Invalid Code! Please try with a different code')
     }
-    let user = type === USER_TYPE.USER 
-      ? await prisma.user.findUnique({ where: { username } })
+    let user = type === USER_TYPE.CUSTOMER 
+      ? await prisma.customer.findUnique({ where: { username } })
       : await prisma.owner.findUnique({ where: { username } })
     const token = generateJWT(user, type)
     await prisma.accessRequest.delete({ where: { id: requestId, username, code }})

@@ -13,12 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Customer {
   id         String   @id @default(uuid()) @map("_id")
   createdAt  DateTime @default(now())
   username   String   @unique
   name       String?
   arabicName String?
+  address    Address?
+  Order      Order[]
 }
 
 model Owner {
@@ -44,6 +46,7 @@ model Store {
   location         LocationCoordinates
   images           String[]
   menu             MenuItem[]
+  Order            Order[]
 }
 
 type LocationCoordinates {
@@ -85,6 +88,51 @@ type Address {
   city   String
   state  String
   zip    String
+}
+
+model Order {
+  id         String      @id @default(uuid()) @map("_id")
+  createdAt  DateTime    @default(now())
+  customerId String
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  storeId    String
+  store      Store       @relation(fields: [storeId], references: [id])
+  total      Float
+  status     OrderStatus
+  orderItems OrderItem[]
+  orderLogs  OrderLog
+}
+
+type OrderLog {
+  createdAt      DateTime    @default(now())
+  previousStatus OrderStatus
+  currentStatus  OrderStatus
+}
+
+enum OrderStatus {
+  SUBMITTED
+  STARTED
+  CANCELLED
+  INPROCESS
+  PREPARED
+  WAITING
+  CLOSED
+}
+
+enum SpiceLevel {
+  SUPERHOT
+  HOT
+  MEDIUM
+  MILD
+}
+
+type OrderItem {
+  menuItem   String
+  quantity   Int
+  price      Float
+  spiceLevel SpiceLevel
+  note       String?
+  arabicNote String?
 }
 
 model AccessRequest {
