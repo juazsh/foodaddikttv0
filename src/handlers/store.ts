@@ -1,6 +1,9 @@
 import { Request, Response } from 'express'
 import prisma from '../db'
 import { removeItem } from '../modules/util'
+import { getAverageRating } from '../modules/shared'
+
+
 export const handleStoreCreation = async (req: Request, res: Response) => {
   try {
     const { id } = req.user
@@ -80,7 +83,8 @@ export const handleAddStoreReview = async (req: Request, res: Response) => {
     const { username } = req.user
     const store = await prisma.store.findUnique({where: { id: storeId}})
     removeItem(store.reviews, r => r.username === username)
-    await prisma.store.update({where: {id: storeId}, data: { reviews: [...store.reviews, { username, ...req.body }] }})
+    store.reviews.push({ username, ...req.body })
+    await prisma.store.update({where: {id: storeId}, data: { rating: getAverageRating(store),reviews: store.reviews }})
     res.json({data: {review: req.body}, message: 'Review Added Successfully!', success: true})
   } catch (err) {
     res.json({data: {},  message: err.message, success: false})  
@@ -95,7 +99,7 @@ export const handleUpdateStoreReview = async (req: Request, res: Response) => {
     let review = removeItem(store.reviews, r => r.username === username)
     review = {...review, ...req.body } 
     store.reviews.push(review)
-    await prisma.store.update({where: { id: storeId}, data: { reviews: store.reviews }})
+    await prisma.store.update({where: { id: storeId}, data: { rating: getAverageRating(store), reviews: store.reviews }})
     res.json({data: {review: req.body}, message: 'Review Updated Successfully!', success: true})
   } catch(err) {
     res.json({data: {}, message: err.message, success: false})

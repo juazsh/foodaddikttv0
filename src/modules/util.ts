@@ -12,8 +12,8 @@ export const getIP = (req) => {
   return realIP
 }
 
-export const removeItem = (arr, fun) => {
-  var index = arr.findIndex(fun)
+export const removeItem = (arr, func) => {
+  var index = arr.findIndex(func)
   console.log('index', index)
   const len = arr.length
   if(!len || index == -1 ) return undefined 
@@ -23,3 +23,5 @@ export const removeItem = (arr, fun) => {
   arr.length = len - 1
   return ret
 }
+
+export const getAverage = (o, func) => o.reduce(func) / o.length

@@ -30,6 +30,7 @@ export const handleUserAccessRequest = async (req, res) => {
     res.json({data: {username, requestId : accessRequest.id }, message: 'Check your email for access code', success: true})  
   }
   catch(err) {
+    console.log(err.message)
     res.json({data: {}, message: 'Something went wrong!', success: false})  
   }
 }
