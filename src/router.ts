@@ -1,7 +1,7 @@
 
 import { Router } from 'express'
 import { handleOwnerInfoUpdate, handleGetOwners } from './handlers/owner'
-import { handleGetMenu, handleGetOneMenuItem, handleGetStores, handleGetStoresWithFilters, handleMenuItemCreation, handleMenuItemUpdate, handleStoreCreation, handleStoreUpdate } from './handlers/store'
+import { handleAddStoreReview, handleGetMenu, handleGetOneMenuItem, handleGetStores, handleGetStoresWithFilters, handleMenuItemCreation, handleMenuItemUpdate, handleStoreCreation, handleStoreUpdate, handleUpdateStoreReview } from './handlers/store'
 import { handleGetOrdersForCustomer, handleGetOrdersForStore, handleOrderCreation, handleOrderUpdate } from './handlers/order'
 const router = Router()
 
@@ -15,7 +15,9 @@ router.get('/stores/nearby', handleGetStoresWithFilters)
 router.post('/stores/:storeId/menuitems', handleMenuItemCreation)
 router.post('/stores/:storeId/menuitems/:mid', handleMenuItemUpdate)
 router.post('/stores/:storeId/menuitems/:mid', handleGetOneMenuItem)
-router.post('/stores/:storeId/menuitems', handleGetMenu)
+router.get('/stores/:storeId/menuitems', handleGetMenu)
+router.post('/stores/:storeId/review', handleAddStoreReview)
+router.put('/stores/:storeId/review', handleUpdateStoreReview)
 
 router.post('/orders/:storeId/:customerId', handleOrderCreation)
 router.put('/orders/:orderId', handleOrderUpdate)

@@ -1,14 +1,15 @@
 import { Request, Response } from 'express'
 import prisma from '../db'
 import { Category } from '@prisma/client'
+import { removeItem } from '../modules/util'
 export const handleStoreCreation = async (req: Request, res: Response) => {
   try {
     const { id } = req.user
-    const {latitude, longitude } = req.body
+    const {latitude, longitude, name, address, searchTags } = req.body
     const store = await prisma.store.create({ data: {
       belongsToId: id,
       location: { type: 'Point', coordinates: [latitude, longitude]},
-      ...req.body
+      name, address, searchTags
     }})
     res.json({data: { store }, message: "New store added successfully", success: true })
   }
@@ -20,7 +21,10 @@ export const handleStoreCreation = async (req: Request, res: Response) => {
 export const handleStoreUpdate = async (req: Request, res: Response) => {
   try {
     const { storeId } = req.params
-    const store = await prisma.store.update({where : {id : storeId }, data: { ...req.body}})
+    const {latitude, longitude, name, address, searchTags } = req.body
+    
+    const store = await prisma.store.update({where : {id : storeId }, data: { location: { type: 'Point', coordinates: [latitude, longitude]},
+      name, address, searchTags }})
     res.json({data: { store }, message: "Store updated successfully", success: true })
   }
   catch(err) {
@@ -60,6 +64,31 @@ export const handleGetStoresWithFilters = async (req: Request, res: Response) =>
   }
 }
 
+export const handleAddStoreReview = async (req: Request, res: Response) => {
+  try {
+    const { storeId } = req.params
+    const { username } = req.user
+    await prisma.store.update({where: {id: storeId}, data: { reviews: { username, ...req.body } }})
+    res.json({data: {review: req.body}, message: 'Review Added Successfully!', success: true})
+  } catch (err) {
+    res.json({data: {},  message: err.message, success: false})  
+  }
+}
+
+export const handleUpdateStoreReview = async (req: Request, res: Response) => {
+  try {
+    const  { storeId } = req.params
+    const { username } = req.user
+    const store = await prisma.store.findUnique({where: { id: storeId}})
+    let review = removeItem(store.reviews, r => r.username === username)
+    review = {...review, ...req.body } 
+    store.reviews.push(review)
+    await prisma.store.update({where: { id: storeId}, data: { reviews: store.reviews }})
+    res.json({data: {review: req.body}, message: 'Review Updated Successfully!', success: true})
+  } catch(err) {
+    res.json({data: {}, message: err.message, success: false})
+  }
+}
 
 /** menu item handlers */
 export const handleMenuItemCreation = async (req: Request, res: Response) => {

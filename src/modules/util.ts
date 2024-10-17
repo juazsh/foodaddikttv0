@@ -11,3 +11,15 @@ export const getIP = (req) => {
   const [realIP, ] = ip.split(',')
   return realIP
 }
+
+export const removeItem = (arr, fun) => {
+  var index = arr.findIndex(fun)
+  console.log('index', index)
+  const len = arr.length
+  if(!len || index == -1 ) return undefined 
+  const ret = arr[index]
+  for(var i = index + 1; i < len ; i++)
+    arr[i - 1] = arr[i]
+  arr.length = len - 1
+  return ret
+}

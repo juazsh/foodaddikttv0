@@ -11,6 +11,7 @@ export const handleOrderCreation = async (req: Request, res: Response) => {
     res.json({data: {}, message: 'Something went wrong!', success: false})
   }
 }
+
 export const handleOrderUpdate = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params

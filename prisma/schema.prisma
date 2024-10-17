@@ -16,6 +16,7 @@ datasource db {
 model Customer {
   id         String   @id @default(uuid()) @map("_id")
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   username   String   @unique
   name       String?
   arabicName String?
@@ -26,17 +27,20 @@ model Customer {
 model Owner {
   id         String   @id @default(uuid()) @map("_id")
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   username   String   @unique
   name       String?
   arabicName String?
   stores     Store[]
+  approved   Boolean  @default(false)
 }
 
 model Store {
   id               String              @id @default(uuid()) @map("_id")
   createdAt        DateTime            @default(now())
   belongsToId      String
-  belongsTo        Owner               @relation(fields: [belongsToId], references: [id])
+  updatedAt        DateTime            @updatedAt
+  belongsTo        Owner               @relation(fields: [belongsToId], references: [id], onDelete: Cascade)
   name             String
   arabicName       String?
   address          Address
@@ -46,6 +50,8 @@ model Store {
   location         LocationCoordinates
   images           String[]
   menu             MenuItem[]
+  approved         Boolean             @default(false)
+  reviews          Review[]
   Order            Order[]
 }
 
@@ -55,17 +61,18 @@ type LocationCoordinates {
 }
 
 model MenuItem {
-  id                String       @id @default(uuid()) @map("_id")
-  createdAt         DateTime     @default(now())
+  id                String   @id @default(uuid()) @map("_id")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   ofStoreId         String
-  ofStore           Store        @relation(fields: [ofStoreId], references: [id])
+  ofStore           Store    @relation(fields: [ofStoreId], references: [id], onDelete: Cascade)
   name              String
   arabicName        String?
   description       String
   arabicDescription String?
   price             Float
   category          Category
-  review            ItemReview[]
+  reviews           Review[]
   images            String[]
 }
 
@@ -75,7 +82,7 @@ enum Category {
   SWEET
 }
 
-type ItemReview {
+type Review {
   createdAt     DateTime @default(now())
   username      String
   comment       String?
@@ -93,6 +100,7 @@ type Address {
 model Order {
   id         String      @id @default(uuid()) @map("_id")
   createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
   customerId String
   customer   Customer    @relation(fields: [customerId], references: [id])
   storeId    String
