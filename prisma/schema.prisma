@@ -13,28 +13,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Customer {
   id         String   @id @default(uuid()) @map("_id")
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   username   String   @unique
   name       String?
   arabicName String?
+  address    Address?
+  Order      Order[]
 }
 
 model Owner {
   id         String   @id @default(uuid()) @map("_id")
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   username   String   @unique
   name       String?
   arabicName String?
   stores     Store[]
+  approved   Boolean  @default(false)
 }
 
 model Store {
   id               String              @id @default(uuid()) @map("_id")
   createdAt        DateTime            @default(now())
   belongsToId      String
-  belongsTo        Owner               @relation(fields: [belongsToId], references: [id])
+  updatedAt        DateTime            @updatedAt
+  belongsTo        Owner               @relation(fields: [belongsToId], references: [id], onDelete: Cascade)
   name             String
   arabicName       String?
   address          Address
@@ -44,6 +50,10 @@ model Store {
   location         LocationCoordinates
   images           String[]
   menu             MenuItem[]
+  approved         Boolean             @default(false)
+  reviews          Review[]
+  rating           Float               @default(0.0)
+  Order            Order[]
 }
 
 type LocationCoordinates {
@@ -52,17 +62,19 @@ type LocationCoordinates {
 }
 
 model MenuItem {
-  id                String       @id @default(uuid()) @map("_id")
-  createdAt         DateTime     @default(now())
+  id                String   @id @default(uuid()) @map("_id")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   ofStoreId         String
-  ofStore           Store        @relation(fields: [ofStoreId], references: [id])
+  ofStore           Store    @relation(fields: [ofStoreId], references: [id], onDelete: Cascade)
   name              String
   arabicName        String?
   description       String
   arabicDescription String?
   price             Float
   category          Category
-  review            ItemReview[]
+  rating            Float    @default(0.0)
+  reviews           Review[]
   images            String[]
 }
 
@@ -72,7 +84,7 @@ enum Category {
   SWEET
 }
 
-type ItemReview {
+type Review {
   createdAt     DateTime @default(now())
   username      String
   comment       String?
@@ -85,6 +97,52 @@ type Address {
   city   String
   state  String
   zip    String
+}
+
+model Order {
+  id         String      @id @default(uuid()) @map("_id")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  customerId String
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  storeId    String
+  store      Store       @relation(fields: [storeId], references: [id])
+  total      Float
+  status     OrderStatus
+  orderItems OrderItem[]
+  orderLogs  OrderLog
+}
+
+type OrderLog {
+  createdAt      DateTime    @default(now())
+  previousStatus OrderStatus
+  currentStatus  OrderStatus
+}
+
+enum OrderStatus {
+  SUBMITTED
+  STARTED
+  CANCELLED
+  INPROCESS
+  PREPARED
+  WAITING
+  CLOSED
+}
+
+enum SpiceLevel {
+  SUPERHOT
+  HOT
+  MEDIUM
+  MILD
+}
+
+type OrderItem {
+  menuItem   String
+  quantity   Int
+  price      Float
+  spiceLevel SpiceLevel
+  note       String?
+  arabicNote String?
 }
 
 model AccessRequest {
