@@ -1,0 +1,23 @@
+
+import { Router } from 'express'
+import { handleOwnerInfoUpdate, handleGetOwners } from './handlers/owner'
+import { handleGetMenu, handleGetOneMenuItem, handleGetStores, handleGetStoresWithFilters, handleMenuItemCreation, handleMenuItemUpdate, handleStoreCreation, handleStoreUpdate } from './handlers/store'
+const router = Router()
+
+router.put('/owners', handleOwnerInfoUpdate)
+router.get('/owners', handleGetOwners)
+
+router.post('/stores', handleStoreCreation)
+router.put('/stores/:storeId', handleStoreUpdate)
+router.get('/stores', handleGetStores)
+router.get('/stores/nearby', handleGetStoresWithFilters)
+router.post('/stores/:storeId/menuitems', handleMenuItemCreation)
+router.post('/stores/:storeId/menuitems/:mid', handleMenuItemUpdate)
+router.post('/stores/:storeId/menuitems/:mid', handleGetOneMenuItem)
+router.post('/stores/:storeId/menuitems', handleGetMenu)
+
+
+
+
+router.post('/orders')
+export default router
