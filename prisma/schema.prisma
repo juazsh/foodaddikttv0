@@ -52,6 +52,7 @@ model Store {
   menu             MenuItem[]
   approved         Boolean             @default(false)
   reviews          Review[]
+  rating           Float               @default(0.0)
   Order            Order[]
 }
 
@@ -72,6 +73,7 @@ model MenuItem {
   arabicDescription String?
   price             Float
   category          Category
+  rating            Float    @default(0.0)
   reviews           Review[]
   images            String[]
 }
