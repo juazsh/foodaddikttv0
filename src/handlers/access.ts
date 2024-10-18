@@ -3,9 +3,13 @@ import { generateJWT } from '../modules/auth'
 import { getRandomAccessCode } from '../modules/util'
 import { sendMail } from '../services/email'
 import { USER_TYPE } from '../modules/shared'
+// import { sendMessage } from '../services/message'
 
 export const handleUserAccessRequest = async (req, res) => {
   try {
+    // await sendMessage('15854988184', 'Hello, user')
+    // res.send('good')
+    // return
     let user = undefined
     const { type, username} = req.body
     if(type === USER_TYPE.CUSTOMER) {
