@@ -25,6 +25,9 @@ export default merge({
   },
   secrets: {
     jwt: process.env.JWT_SECRET,
-    dbURL: process.env.DATABASE_URL
+    dbURL: process.env.DATABASE_URL,
+    smsAPIKey: process.env.SMS_API_KEY,
+    smsAPIToken: process.env.SMP_API_TOKEN,
+    smsAPIUrl: process.env.SMP_API_URL,
   }
 }, envConfig)
